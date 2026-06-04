@@ -17,20 +17,42 @@ services:
 
   # ─── Application 1 ───────────────────────────────────────────────────────────
   app1:
-    image: nginx:alpine
+    build: ./apps/app1
     container_name: app1
-    volumes:
-      - ./apps/app1/index.html:/usr/share/nginx/html/index.html:ro
+    environment:
+      PORT: 80
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: supersecretpassword
+      DB_NAME: livrosdb
+      JWT_SECRET: dev-secret-key-123
+      SEED_USER_EMAIL: admin@admin.com
+      SEED_USER_PASSWORD: adminpassword
+    depends_on:
+      postgres:
+        condition: service_healthy
     networks:
       - internal
     restart: unless-stopped
 
   # ─── Application 2 ───────────────────────────────────────────────────────────
   app2:
-    image: nginx:alpine
+    build: ./apps/app2
     container_name: app2
-    volumes:
-      - ./apps/app2/index.html:/usr/share/nginx/html/index.html:ro
+    environment:
+      PORT: 80
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: supersecretpassword
+      DB_NAME: livrosdb
+      JWT_SECRET: dev-secret-key-123
+      SEED_USER_EMAIL: admin@admin.com
+      SEED_USER_PASSWORD: adminpassword
+    depends_on:
+      postgres:
+        condition: service_healthy
     networks:
       - internal
     restart: unless-stopped
@@ -40,11 +62,16 @@ services:
     image: postgres:16-alpine
     container_name: postgres
     environment:
-      POSTGRES_DB:       appdb
-      POSTGRES_USER:     appuser
-      POSTGRES_PASSWORD: apppassword
+      POSTGRES_DB: livrosdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: supersecretpassword
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./data/postgres:/var/lib/postgresql/data:Z
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d livrosdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     networks:
       - internal
     restart: unless-stopped
@@ -52,8 +79,4 @@ services:
 # ─── Internal network ──────────────────────────────────────────────────────────
 networks:
   internal:
-    driver: bridge
-
-# ─── Volumes ───────────────────────────────────────────────────────────────────
-volumes:
-  postgres_data:
+    driver: bridge
