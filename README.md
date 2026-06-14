@@ -40,8 +40,8 @@ resilient-web-infrastructure/
 ├── prometheus/
 │   └── prometheus.yml          # Scrape targets configuration
 │
-└── scripts/
-    └── start-infra.sh          # Automated startup script
+├── script.sh                   # Automated startup script (Linux/Mac)
+└── script.ps1                  # Automated startup script (Windows)
 ```
 
 ---
@@ -92,8 +92,9 @@ Observability
 | app1 | internal | Node.js instance 1 |
 | app2 | internal | Node.js instance 2 |
 | postgres | internal | PostgreSQL database |
-| prometheus | `9090` | Metrics scraper |
-| grafana | `3000` | Dashboard UI |
+| prometheus | internal | Metrics scraper |
+| grafana | internal | Dashboard UI |
+| cadvisor | internal | Container resource metrics |
 | nginx-exporter | internal | Exposes nginx metrics to Prometheus |
 | postgres-exporter | internal | Exposes PostgreSQL metrics to Prometheus |
 
@@ -120,7 +121,11 @@ cd resilient-web-infrastructure
 ### ▶️ 2. Start using the script (recommended)
 
 ```bash
-bash scripts/start-infra.sh
+# Linux / macOS
+bash script.sh
+
+# Windows (PowerShell)
+.\script.ps1
 ```
 
 The script will:
@@ -143,8 +148,8 @@ docker compose ps
 | Service | URL | Credentials |
 |---|---|---|
 | Application | http://localhost | — |
-| Prometheus | http://localhost:9090 | — |
-| Grafana | http://localhost:3000 | `admin` / `admin` |
+| Prometheus | http://localhost/prometheus/ | — |
+| Grafana | http://localhost/grafana/ | `admin` / `admin` |
 
 > On first Grafana login you will be prompted to change the password. You may skip this step.
 
@@ -153,7 +158,7 @@ docker compose ps
 ## Testing and Visualising Metrics
 
 ### 1. Prometheus Expressions
-You can query raw metrics directly in Prometheus. Open **http://localhost:9090**, type an expression in the search bar, and click **Execute** (use the "Graph" tab for a timeline view). 
+You can query raw metrics directly in Prometheus. Open **http://localhost/prometheus/**, type an expression in the search bar, and click **Execute** (use the "Graph" tab for a timeline view). 
 
 Try these expressions:
 - `nginx_http_requests_total` — Total HTTP requests received by Nginx.
@@ -163,9 +168,9 @@ Try these expressions:
 ### 2. Setting Up Grafana Dashboards
 To view these metrics in beautiful dashboards:
 
-1. Open **http://localhost:3000** and log in with `admin` / `admin`
+1. Open **http://localhost/grafana/** and log in with `admin` / `admin`
 2. Go to **Connections → Data sources → Add data source**
-3. Select **Prometheus** and set the URL to `http://prometheus:9090`
+3. Select **Prometheus** and set the URL to `http://prometheus:9090/prometheus`
 4. Click **Save & test**
 5. Go to **Dashboards → New → Import** and use one of these IDs from the Grafana gallery:
    - **`12708`** — Nginx (Requests, connections, traffic)
@@ -181,7 +186,8 @@ To view these metrics in beautiful dashboards:
 
 | Command | Description |
 |---|---|
-| `bash scripts/start-infra.sh` | Start using the automated script |
+| `bash script.sh` | Start using the automated script (Linux/Mac) |
+| `.\script.ps1` | Start using the automated script (Windows) |
 | `docker compose up -d` | Start all services in background |
 | `docker compose up --build -d` | Rebuild images and start |
 | `docker compose ps` | Show status of all containers |
@@ -281,8 +287,8 @@ resilient-web-infrastructure/
 ├── prometheus/
 │   └── prometheus.yml          # Configuração dos alvos de scraping
 │
-└── scripts/
-    └── start-infra.sh          # Script de inicialização automatizada
+├── script.sh                   # Script de inicialização automatizada (Linux/Mac)
+└── script.ps1                  # Script de inicialização automatizada (Windows)
 ```
 
 ---
@@ -333,8 +339,9 @@ Observabilidade
 | app1 | interna | Instância 1 Node.js |
 | app2 | interna | Instância 2 Node.js |
 | postgres | interna | Banco de dados PostgreSQL |
-| prometheus | `9090` | Coletor de métricas |
-| grafana | `3000` | Interface de dashboards |
+| prometheus | interna | Coletor de métricas |
+| grafana | interna | Interface de dashboards |
+| cadvisor | interna | Métricas de recursos de contêineres |
 | nginx-exporter | interna | Exporta métricas do Nginx para o Prometheus |
 | postgres-exporter | interna | Exporta métricas do PostgreSQL para o Prometheus |
 
@@ -361,7 +368,11 @@ cd resilient-web-infrastructure
 ### ▶️ 2. Inicie com o script (recomendado)
 
 ```bash
-bash scripts/start-infra.sh
+# Linux / macOS
+bash script.sh
+
+# Windows (PowerShell)
+.\script.ps1
 ```
 
 O script irá:
@@ -384,8 +395,8 @@ docker compose ps
 | Serviço | URL | Credenciais |
 |---|---|---|
 | Aplicação | http://localhost | — |
-| Prometheus | http://localhost:9090 | — |
-| Grafana | http://localhost:3000 | `admin` / `admin` |
+| Prometheus | http://localhost/prometheus/ | — |
+| Grafana | http://localhost/grafana/ | `admin` / `admin` |
 
 > No primeiro login no Grafana será pedido para trocar a senha. É possível pular esta etapa.
 
@@ -394,7 +405,7 @@ docker compose ps
 ## Testando e Visualizando Métricas
 
 ### 1. Consultas no Prometheus
-Você pode consultar as métricas "cruas" diretamente no Prometheus. Abra **http://localhost:9090**, digite uma expressão na barra de pesquisa e clique em **Execute** (use a aba "Graph" para ver em formato de linha do tempo).
+Você pode consultar as métricas "cruas" diretamente no Prometheus. Abra **http://localhost/prometheus/**, digite uma expressão na barra de pesquisa e clique em **Execute** (use a aba "Graph" para ver em formato de linha do tempo).
 
 Tente estas expressões:
 - `nginx_http_requests_total` — Total de requisições HTTP recebidas pelo Nginx.
@@ -404,9 +415,9 @@ Tente estas expressões:
 ### 2. Configurando Dashboards no Grafana
 Para ver essas métricas em painéis visuais:
 
-1. Acesse **http://localhost:3000** e faça login com `admin` / `admin`
+1. Acesse **http://localhost/grafana/** e faça login com `admin` / `admin`
 2. Vá em **Connections → Data sources → Add data source**
-3. Selecione **Prometheus** e defina a URL como `http://prometheus:9090`
+3. Selecione **Prometheus** e defina a URL como `http://prometheus:9090/prometheus`
 4. Clique em **Save & test**
 5. Vá em **Dashboards → New → Import** e use um dos IDs abaixo da galeria do Grafana:
    - **`12708`** — Nginx (Requisições, conexões, tráfego)
@@ -422,7 +433,8 @@ Para ver essas métricas em painéis visuais:
 
 | Comando | Descrição |
 |---|---|
-| `bash scripts/start-infra.sh` | Iniciar com o script automatizado |
+| `bash script.sh` | Iniciar com o script automatizado (Linux/Mac) |
+| `.\script.ps1` | Iniciar com o script automatizado (Windows) |
 | `docker compose up -d` | Subir todos os serviços em segundo plano |
 | `docker compose up --build -d` | Rebuildar imagens e subir |
 | `docker compose ps` | Ver status de todos os containers |
